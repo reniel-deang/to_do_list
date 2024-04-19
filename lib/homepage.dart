@@ -38,14 +38,15 @@ class _HomePageState extends State<HomePage> {
     db.updateDataBase();
   }
 
-  void saveNewTask(String taskName, DateTime selectedDate, TimeOfDay selectedTime) {
+  void saveNewTask(
+      String taskName, DateTime selectedDate, TimeOfDay selectedTime) {
     setState(() {
       db.addNewTask(taskName, false, selectedDate, selectedTime);
       _controller.clear();
       _selectedDate = null;
       _selectedTime = null;
     });
-    Navigator.of(context).pop(); // Close the dialog
+    Navigator.of(context).pop();
   }
 
   void createNewTask() {
@@ -102,6 +103,7 @@ class _HomePageState extends State<HomePage> {
         itemCount: db.toDoList.length,
         itemBuilder: (context, index) {
           return ToDoTile(
+
             taskName: db.toDoList[index][0],
             taskCompleted: db.toDoList[index][1],
             dueDate: db.toDoList[index][2],

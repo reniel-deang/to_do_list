@@ -11,7 +11,7 @@ void main() async {
   // Open the Hive box
   await Hive.openBox('mybox');
 
-  runApp(const MyApp());
+  runApp(MaterialApp(home: HomePage(),debugShowCheckedModeBanner: false,theme: ThemeData(primaryColor: Colors.white),));
 }
 
 class MyApp extends StatelessWidget {
@@ -19,24 +19,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a MaterialColor based on white color
-    MaterialColor whiteSwatch = const MaterialColor(0xFFFFFFFF, {
-      50: Colors.white,
-      100: Colors.white,
-      200: Colors.white,
-      300: Colors.white,
-      400: Colors.white,
-      500: Colors.white,
-      600: Colors.white,
-      700: Colors.white,
-      800: Colors.white,
-      900: Colors.white,
-    });
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const HomePage(),
-      theme: ThemeData(primarySwatch: whiteSwatch),
-    );
+
+    return Scaffold();
   }
 }
