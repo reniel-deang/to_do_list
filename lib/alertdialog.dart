@@ -51,6 +51,12 @@ class _DialogBoxState extends State<DialogBox> {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
     );
     if (pickedTime != null) {
       setState(() {
@@ -59,115 +65,134 @@ class _DialogBoxState extends State<DialogBox> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       content: Container(
-          height: 300,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+        height: 300,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
             TextField(
-            controller: widget.controller,
-            onChanged: (value) {
-              setState(() {
-                isTextFieldEmpty = value.isEmpty;
-              });
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Add a new To-Do Task",
+              controller: widget.controller,
+              onChanged: (value) {
+                setState(() {
+                  isTextFieldEmpty = value.isEmpty;
+                });
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Add a new To-Do Task",
+              ),
             ),
-          ),
-          SizedBox(height: 10,),
-          Visibility(
-            visible: !isTextFieldEmpty,
-            child: Column(
+            SizedBox(
+              height: 10,
+            ),
+            Visibility(
+              visible: !isTextFieldEmpty,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Due date and time :',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  InkWell(
+                    onTap: () => _selectDate(context),
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Date not set',
+                          border: UnderlineInputBorder(),
+                        ),
+                        controller: TextEditingController(
+                          text: _selectedDate == null
+                              ? ''
+                              : _selectedDate.toString().substring(0, 10),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => _selectTime(context),
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Time not set',
+                          border: UnderlineInputBorder(),
+                        ),
+                        controller: TextEditingController(
+                          text: _selectedTime == null
+                              ? ''
+                              : _selectedTime!.format(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
+              ),
+            ),
+
+            if (isTextFieldEmpty ||
+                _selectedDate == null ||
+                _selectedTime == null)
+              Text(
+                "Please enter all input fields before saving.",
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            // save and cancel
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Due date and time :', style: TextStyle(fontSize: 15,),
-                    ),
-                  ],
+                MyButton(
+                  text: "Save",
+                  onPressed: !isTextFieldEmpty &&
+                          _selectedDate != null &&
+                          _selectedTime != null
+                      ? () {
+                          final taskName = widget.controller.text;
+                          widget.onSave(
+                              taskName, _selectedDate!, _selectedTime!);
+
+                          widget.controller.clear();
+                          setState(() {
+                            _selectedDate = null;
+                            _selectedTime = null;
+                          });
+                          // Close the dialog
+                        }
+                      : null,
                 ),
-                InkWell(
-                  onTap: () => _selectDate(context),
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        hintText: 'Date not set',
-                        border: UnderlineInputBorder(),
-                      ),
-                      controller: TextEditingController(
-                        text: _selectedDate == null ? '' : _selectedDate.toString().substring(0, 10),
-                      ),
-                    ),
-                  ),
+                const SizedBox(width: 10),
+                MyButton(
+                  text: "Cancel",
+                  onPressed: () {
+                    widget.controller.clear();
+                    setState(() {
+                      _selectedDate = null;
+                      _selectedTime = null;
+                    });
+                    // Close the dialog
+                    Navigator.pop(context);
+                  },
                 ),
-                InkWell(
-                  onTap: () => _selectTime(context),
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        hintText: 'Time not set',
-                        border: UnderlineInputBorder(),
-                      ),
-                      controller: TextEditingController(
-                        text: _selectedTime == null ? '' : _selectedTime!.format(context),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10,),
               ],
             ),
-          ),
-          // Show the message if all input fields are empty and Save button is pressed
-          if (isTextFieldEmpty || _selectedDate == null || _selectedTime == null)
-      Text(
-      "Please enter all input fields before saving.",
-      style: TextStyle(color: Colors.red,),textAlign: TextAlign.center,
-    ),
-    // save and cancel
-    Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-    MyButton(
-    text: "Save",
-    onPressed: !isTextFieldEmpty && _selectedDate != null && _selectedTime != null
-    ? () {
-    final taskName = widget.controller.text;
-    widget.onSave(taskName, _selectedDate!, _selectedTime!);
-    // Reset task name, selected date, and selected time to null
-    widget.controller.clear();
-    setState(() {
-    _selectedDate = null;
-    _selectedTime = null;
-    });
-    // Close the dialog
-    }
-        : null, // Disable the button if any field is empty
-    ),
-    const SizedBox(width: 10),
-    MyButton(
-    text: "Cancel",
-    onPressed: () {
-    // Reset task name, selected date, and selected time to null
-    widget.controller.clear();
-    setState(() {
-    _selectedDate = null;
-    _selectedTime = null;
-    });
-    // Close the dialog
-    Navigator.pop(context);
-    },
-    ),
-    ],
-    ),
-    ],
-    ),
-    ),
+          ],
+        ),
+      ),
     );
   }
 }

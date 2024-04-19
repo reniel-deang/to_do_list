@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class ToDoTile extends StatelessWidget {
   final String taskName;
   final bool taskCompleted;
@@ -9,7 +8,8 @@ class ToDoTile extends StatelessWidget {
   Function(bool?)? onChanged;
   Function(BuildContext)? deleteFunction;
 
-  ToDoTile({super.key, 
+  ToDoTile({
+    super.key,
     required this.taskName,
     required this.taskCompleted,
     required this.dueDate,
@@ -48,7 +48,9 @@ class ToDoTile extends StatelessWidget {
                   activeColor: Colors.black,
                 ),
 
-                const SizedBox(width: 10,),
+                const SizedBox(
+                  width: 10,
+                ),
 
                 // Task name
                 Expanded(
@@ -66,7 +68,6 @@ class ToDoTile extends StatelessWidget {
                 // Display date and time
 
 
-                // Delete button (conditionally shown)
                 Visibility(
                   visible: taskCompleted,
                   child: IconButton(
@@ -77,36 +78,36 @@ class ToDoTile extends StatelessWidget {
                 ),
               ],
             ),
-
             const Row(
               children: [
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
               ],
             ),
             const Row(
               children: [
-                SizedBox(width: 40,),
+                SizedBox(
+                  width: 40,
+                ),
                 Text('Date and Time:'),
               ],
             ),
-
             if (dueDate != null && dueTime != null)
-
-
               Row(
                 children: [
-                  const SizedBox(width: 40,),
+                  const SizedBox(
+                    width: 40,
+                  ),
                   const Icon(Icons.calendar_today),
                   const SizedBox(width: 5),
                   Text('${dueDate!.day}/${dueDate!.month}/${dueDate!.year}'),
                   const SizedBox(width: 10),
                   const Icon(Icons.access_time),
                   const SizedBox(width: 5),
-                  Text('${dueTime!.hour}:${dueTime!.minute}'),
+                  Text('${dueTime!.hourOfPeriod}:${dueTime!.minute} ${dueTime!.period == DayPeriod.am ? 'AM' : 'PM'}'),
                 ],
               ),
-
-
           ],
         ),
       ),
